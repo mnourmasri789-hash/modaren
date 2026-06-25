@@ -1,11 +1,15 @@
-FROM php:8.2-cli
+FROM php:8.2-apache
 
 RUN docker-php-ext-install pdo pdo_mysql mysqli
 
-WORKDIR /app
+RUN a2enmod rewrite
 
-COPY . .
+COPY . /var/www/html/
 
-EXPOSE 8080
+WORKDIR /var/www/html
 
-CMD ["php", "-S", "0.0.0.0:8080", "index.php"]
+COPY .htaccess /var/www/html/.htaccess
+
+RUN sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
+
+EXPOSE 80
